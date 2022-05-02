@@ -13,11 +13,11 @@ import { useState } from "react";
 import { Convert } from "easy-currencies";
 
 function App() {
-  const [columns, setcolumns] = useState(["Kategoria", "Cena (zł)"]);
+  const [columns, setcolumns] = useState(["Kategoria", "Cena (zł)", "Nazwa"]);
   const [data, setdata] = useState([
-    ["Na Ziemi", 12],
-    ["Na drzewie", 12],
-    ["Miodożer", 12],
+    ["Na Ziemi", 12, "Domek m.24"],
+    ["Na drzewie", 12, "Domek m.24"],
+    ["Miodożer", 12, "Domek m.24"],
   ]);
   const [currency, setcurrency] = useState("PLN");
   const options = {
@@ -34,6 +34,7 @@ function App() {
     category: "Na Ziemi",
     price: 0,
     animal_name: "",
+    product: "",
   });
 
   const [categoryFromSelect, setcategoryFromSelect] = useState(1);
@@ -46,6 +47,9 @@ function App() {
     if (dataFromForm.price < 1) {
       error.price = "Podaj poprawną cenę";
     }
+    if (dataFromForm.product.length < 3) {
+      error.product = "Podaj poprawną nazwę produktu";
+    }
     if (
       dataFromForm.animal_name.length < 3 &&
       dataFromForm.category === "custom"
@@ -56,9 +60,9 @@ function App() {
     if (Object.keys(error).length === 0) {
       let item = [];
       if (dataFromForm.category === "custom") {
-        item = [dataFromForm.animal_name, dataFromForm.price];
+        item = [dataFromForm.animal_name, dataFromForm.price, dataFromForm.product];
       } else {
-        item = [dataFromForm.category, dataFromForm.price];
+        item = [dataFromForm.category, dataFromForm.price, dataFromForm.product];
       }
       setdata((prev) => setdata([...prev, item]));
     } else {
@@ -89,11 +93,12 @@ function App() {
     newArr.forEach((x, idx) => {
       x[1] = x[0];
       x[0] = data[idx][0];
+      x[2] = data[idx][2]
     });
 
     setdata(newArr);
     console.log(newArr);
-    setcolumns((prev) => setcolumns([prev[0], `CENA (${curr})`]));
+    setcolumns((prev) => setcolumns([prev[0], `CENA (${curr})`, prev[2]]));
     setcurrency(curr);
   }
 
@@ -148,6 +153,26 @@ function App() {
         </Row>
 
         <Row>
+        <Col>
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="inputGroup-sizing-default">
+                Produkt
+              </InputGroup.Text>
+              <FormControl
+                type="text"
+                onChange={(e) => {
+                  setdataFromForm((prev) =>
+                    setdataFromForm({ ...prev, product: e.target.value })
+                  );
+                }}
+                aria-label="Default"
+                aria-describedby="inputGroup-sizing-default"
+              />
+            </InputGroup>
+            {error && error?.product !== undefined && (
+              <p className="text-danger">{error?.product}</p>
+            )}
+          </Col>
           {categoryFromSelect === "custom" && (
             <Col>
               <InputGroup className="mb-3">
