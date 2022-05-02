@@ -79,7 +79,7 @@ function App() {
 
     async function convert(value) {
       let res = await Convert(value[1]).from(currency).to(curr);
-      return res;
+      return res.toFixed(2);
     }
 
     for await (const arr of data.map((x) => convert(x))) {
